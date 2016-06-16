@@ -25,12 +25,12 @@ import saf.components.AppFileComponent;
  * @author McKillaGorilla
  */
 public class FileManager implements AppFileComponent {
-
+    DataManager dataManager;
     @Override
     public void loadData(AppDataComponent data, String filePath) throws IOException {
         
         // CLEAR THE OLD DATA OUT
-	DataManager dataManager = (DataManager)data;
+	dataManager = (DataManager)data;
 	dataManager.reset();
 	
 	// LOAD THE JSON FILE WITH ALL THE DATA
@@ -42,10 +42,10 @@ public class FileManager implements AppFileComponent {
 	    ArrayList<Polygon> temp = new ArrayList<>();
             temp = loadSubregion(subregion);
             for (Polygon x: temp) {
+                //Polygon y = dataManager.convertPolygon(x);
                 dataManager.addPolygon(x);
             }
 	}
-        
         
     }
     
@@ -53,18 +53,23 @@ public class FileManager implements AppFileComponent {
         JsonArray list2 = obj.getJsonArray("SUBREGION_POLYGONS");
         ArrayList<Double> xyCoordinates = new ArrayList<>();
         ArrayList<Polygon> myPolygons = new ArrayList<>();
+        
         for (int i = 0; i < list2.size(); i++) {
 	    JsonArray myArray = list2.getJsonArray(i);
             for (int j = 0; j < myArray.size(); j++) {
                 double x = getDataAsDouble(myArray.getJsonObject(j), "X");
                 double y = getDataAsDouble(myArray.getJsonObject(j), "Y");
                 
-                xyCoordinates.add(x+180);
-                xyCoordinates.add(90-y);
+                xyCoordinates.add(x);
+                xyCoordinates.add(y);
             }
             
+            dataManager.scaleXYCoordinates(xyCoordinates);
+            
             Polygon p = new Polygon();
+            
             p.getPoints().addAll(xyCoordinates);
+            
             xyCoordinates.clear();
             myPolygons.add(p);
 	}

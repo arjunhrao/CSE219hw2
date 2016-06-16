@@ -26,25 +26,41 @@ public class Workspace extends AppWorkspaceComponent {
         app = initApp;
         workspace = new Pane();
         removeButtons();
+        
+        //initialize processing of eventhandlers - create new method
     }
 
     @Override
     public void reloadWorkspace() {
         DataManager dataManager = (DataManager)app.getDataComponent();
-        app.getWorkspaceComponent().getWorkspace().setStyle("-fx-background-color: lightblue;");
+        //clears the workspace
+        workspace.getChildren().clear();
+        
+        //set the background to be lightblue
+        workspace.setStyle("-fx-background-color: lightblue;");
         //app.getWorkspaceComponent().getWorkspace().
-                //.setBackground(new Background("#F0F8FF"));
+        //.setBackground(new Background("#F0F8FF"));
+           
+        //fill polygons with green
         dataManager.fillPolygons(Paint.valueOf("#556B2F"));
-        //for (int m = 0; m < dataManager.getPolygonList().size(); m++) {
+        
+        
+        //clears the pane so you can load something else
+        renderPane.getChildren().clear();
+        
+        //add the polygons
         for (Polygon poly: dataManager.getPolygonList()) {
-          //dataManager.getPolygonList().get(m).setScaleX(6);
-          //dataManager.getPolygonList().get(m).setScaleY(6);
-          
           renderPane.getChildren().addAll(poly);
         }
-        renderPane.setScaleX(4);renderPane.setScaleY(4);
+        
+        //renderPane.setScaleX(4);
+        //renderPane.setScaleY(4);
+        renderPane.setStyle("-fx-background-color: lightblue;");
+        
 
-        app.getWorkspaceComponent().getWorkspace().getChildren().add(renderPane);
+        
+        workspace.getChildren().addAll(renderPane);
+        
         //app.getWorkspaceComponent().
     }
 
@@ -56,5 +72,9 @@ public class Workspace extends AppWorkspaceComponent {
         FlowPane fp = (FlowPane)app.getGUI().getAppPane().getTop();
         fp.getChildren().remove(2);
         fp.getChildren().remove(0);
+    }
+    
+    public Pane getRenderPane() {
+        return renderPane;
     }
 }
