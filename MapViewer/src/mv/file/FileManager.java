@@ -39,7 +39,7 @@ public class FileManager implements AppFileComponent {
 	JsonArray list = json.getJsonArray("SUBREGIONS");
 	for (int i = 0; i < list.size(); i++) {
 	    JsonObject subregion = list.getJsonObject(i);
-	    ArrayList<Polygon> temp = new ArrayList<>();
+	    ArrayList<Polygon> temp;
             temp = loadSubregion(subregion);
             for (Polygon x: temp) {
                 //Polygon y = dataManager.convertPolygon(x);

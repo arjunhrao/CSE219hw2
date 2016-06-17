@@ -5,6 +5,7 @@
  */
 package mv.gui;
 
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
@@ -12,6 +13,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import saf.components.AppWorkspaceComponent;
 import mv.MapViewerApp;
+import mv.controller.MapController;
 import mv.data.DataManager;
 
 /**
@@ -21,15 +23,40 @@ import mv.data.DataManager;
 public class Workspace extends AppWorkspaceComponent {
     MapViewerApp app;
     Pane renderPane = new Pane();
+    MapController mapController;
+    double xOrigin;
+    double yOrigin;
     
     public Workspace(MapViewerApp initApp) {
         app = initApp;
         workspace = new Pane();
+        xOrigin = app.getGUI().getPrimaryScene().getWidth()/2;
+        yOrigin = app.getGUI().getPrimaryScene().getHeight()/2;
         removeButtons();
         
+        
         //initialize processing of eventhandlers - create new method
+        processEvents();
     }
-
+    
+    public void processEvents() {
+        //create controller
+        mapController = new MapController(app);
+        
+        workspace.setOnMouseClicked(e -> {
+            double x = e.getSceneX();
+            double y = e.getSceneY();
+            if (e.getButton() == MouseButton.PRIMARY) {
+                mapController.processZoomIn(x, y, renderPane, xOrigin, yOrigin);
+            }
+            
+            if (e.getButton() == MouseButton.SECONDARY) {
+                mapController.processZoomOut(x, y, renderPane, xOrigin, yOrigin);
+            }
+            
+        });
+    }
+    
     @Override
     public void reloadWorkspace() {
         DataManager dataManager = (DataManager)app.getDataComponent();
