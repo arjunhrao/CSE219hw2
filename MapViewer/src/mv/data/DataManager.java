@@ -49,7 +49,7 @@ public class DataManager implements AppDataComponent {
     
     public void scaleXYCoordinates(ArrayList<Double> xy) {
         double halfX = app.getGUI().getPrimaryScene().getWidth()/2;
-        double halfY = app.getGUI().getPrimaryScene().getHeight()/2;
+        double halfY = (app.getGUI().getPrimaryScene().getHeight()-60)/2;
         
         for (int n = 0; n < xy.size(); n++) {
                 if (n%2 == 0) {//it's an x
@@ -59,7 +59,7 @@ public class DataManager implements AppDataComponent {
                     xy.set(n, halfX+xy.get(n));
                 } else {
                     //scale
-                    xy.set(n, xy.get(n)/180*app.getGUI().getPrimaryScene().getHeight());
+                    xy.set(n, xy.get(n)/180*(app.getGUI().getPrimaryScene().getHeight()-60));
                     //place relative to origin
                     xy.set(n, halfY-xy.get(n));
                 }

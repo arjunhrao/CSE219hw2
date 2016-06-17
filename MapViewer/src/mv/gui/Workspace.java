@@ -11,6 +11,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import saf.components.AppWorkspaceComponent;
 import mv.MapViewerApp;
 import mv.controller.MapController;
@@ -31,7 +32,7 @@ public class Workspace extends AppWorkspaceComponent {
         app = initApp;
         workspace = new Pane();
         xOrigin = app.getGUI().getPrimaryScene().getWidth()/2;
-        yOrigin = app.getGUI().getPrimaryScene().getHeight()/2;
+        yOrigin = (app.getGUI().getPrimaryScene().getHeight()-60)/2;
         removeButtons();
         
         
@@ -82,19 +83,33 @@ public class Workspace extends AppWorkspaceComponent {
         
         //renderPane.setScaleX(4);
         //renderPane.setScaleY(4);
-        renderPane.setStyle("-fx-background-color: lightblue;");
+        renderPane.setStyle("-fx-background-color: blue;");
         
 
         
         workspace.getChildren().addAll(renderPane);
         
-        //app.getWorkspaceComponent().
+        //clip it to avoid overflow
+        Rectangle clip = new Rectangle();
+        clip.setHeight(app.getGUI().getPrimaryScene().getHeight()-60);
+        clip.setWidth(app.getGUI().getPrimaryScene().getWidth());
+        clip.setLayoutX(0);
+        clip.setLayoutY(0);
+        workspace.setClip(clip);
+        
+        
     }
 
     @Override
     public void initStyle() {
-        
     }
+    
+    public void addLines() {
+        
+        //renderPane.addLines
+    }
+    
+    
     public void removeButtons() {
         FlowPane fp = (FlowPane)app.getGUI().getAppPane().getTop();
         fp.getChildren().remove(2);
