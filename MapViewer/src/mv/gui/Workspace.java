@@ -5,11 +5,15 @@
  */
 package mv.gui;
 
+import javafx.event.EventType;
+import javafx.scene.Group;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import saf.components.AppWorkspaceComponent;
@@ -27,6 +31,7 @@ public class Workspace extends AppWorkspaceComponent {
     MapController mapController;
     double xOrigin;
     double yOrigin;
+    Boolean hasLines;
     
     public Workspace(MapViewerApp initApp) {
         app = initApp;
@@ -34,6 +39,7 @@ public class Workspace extends AppWorkspaceComponent {
         xOrigin = app.getGUI().getPrimaryScene().getWidth()/2;
         yOrigin = (app.getGUI().getPrimaryScene().getHeight()-60)/2;
         removeButtons();
+        hasLines = true;
         
         
         //initialize processing of eventhandlers - create new method
@@ -54,10 +60,18 @@ public class Workspace extends AppWorkspaceComponent {
             if (e.getButton() == MouseButton.SECONDARY) {
                 mapController.processZoomOut(x, y, renderPane, xOrigin, yOrigin);
             }
-            
+        });
+        //checks if g has been pressed and then toggles the lines by switching the value of hasLines
+        workspace.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.G) {
+                if (hasLines)
+                    hasLines = false;
+                else
+                    hasLines = true;
+                }
         });
     }
-    
+        
     @Override
     public void reloadWorkspace() {
         DataManager dataManager = (DataManager)app.getDataComponent();
@@ -85,7 +99,8 @@ public class Workspace extends AppWorkspaceComponent {
         //renderPane.setScaleY(4);
         renderPane.setStyle("-fx-background-color: blue;");
         
-
+        //adds the lines if hasLines = true; else, removes the lines.
+        addLines(hasLines);
         
         workspace.getChildren().addAll(renderPane);
         
@@ -104,11 +119,53 @@ public class Workspace extends AppWorkspaceComponent {
     public void initStyle() {
     }
     
-    public void addLines() {
+    public void addLines(Boolean bool) {
         
         //renderPane.addLines
+        Group group = new Group();
+        //add longitudes
+        for (int j = 0; j < 12; j++) {
+            Line line = new Line();
+            //if not the prime meridian, make it dashed
+            if (j != 6 && j != 0 && j != 12) {
+                line.getStrokeDashArray().addAll(2d,20d);
+                line.setStroke(Paint.valueOf("#d3d3d3"));
+            } else {
+                line.setStroke(Paint.valueOf("#FAEBD7"));
+            }
+
+            line.setStartX((double)((double)j/12.0*renderPane.getWidth()));
+            line.setStartY(0.0f);
+            line.setEndX((double)((double)j/12.0*renderPane.getWidth()));
+            line.setEndY(renderPane.getHeight()-60);
+            group.getChildren().add(line);
+            
+        }
+        //add latitudes
+        for (int j = 0; j < 6; j++) {
+            Line line = new Line();
+            //if not the prime meridian, make it dashed
+            
+            if (j != 3) {
+                line.getStrokeDashArray().addAll(2d,20d);
+                line.setStroke(Paint.valueOf("#d3d3d3"));
+            } else {
+                line.setStroke(Paint.valueOf("#FAEBD7"));
+            }
+            
+            line.setStartY((double)((double)j/6.0*(renderPane.getHeight()-60)));
+            line.setStartX(0.0f);
+            line.setEndY((double)((double)j/6.0*(renderPane.getHeight()-60)));
+            line.setEndX(renderPane.getWidth());
+            group.getChildren().add(line);
+            
+        }
+        
+        if (bool)
+            renderPane.getChildren().add(group);
+        else
+            renderPane.getChildren().remove(group);
     }
-    
     
     public void removeButtons() {
         FlowPane fp = (FlowPane)app.getGUI().getAppPane().getTop();
