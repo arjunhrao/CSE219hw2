@@ -32,6 +32,7 @@ public class Workspace extends AppWorkspaceComponent {
     double xOrigin;
     double yOrigin;
     Boolean hasLines;
+    int counter = 0;
     
     public Workspace(MapViewerApp initApp) {
         app = initApp;
@@ -39,16 +40,17 @@ public class Workspace extends AppWorkspaceComponent {
         xOrigin = app.getGUI().getPrimaryScene().getWidth()/2;
         yOrigin = (app.getGUI().getPrimaryScene().getHeight()-60)/2;
         removeButtons();
-        hasLines = true;
+        hasLines = false;
         
+        //create controller
+        mapController = new MapController(app);
         
         //initialize processing of eventhandlers - create new method
         processEvents();
     }
     
     public void processEvents() {
-        //create controller
-        mapController = new MapController(app);
+
         
         workspace.setOnMouseClicked(e -> {
             double x = e.getSceneX();
@@ -62,18 +64,20 @@ public class Workspace extends AppWorkspaceComponent {
             }
         });
         //checks if g has been pressed and then toggles the lines by switching the value of hasLines
-        workspace.setOnKeyPressed(e -> {
+        app.getGUI().getPrimaryScene().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.G) {
                 if (hasLines)
                     hasLines = false;
                 else
                     hasLines = true;
+                reloadWorkspace();
                 }
         });
     }
         
     @Override
     public void reloadWorkspace() {
+        
         DataManager dataManager = (DataManager)app.getDataComponent();
         //clears the workspace
         workspace.getChildren().clear();
@@ -102,6 +106,7 @@ public class Workspace extends AppWorkspaceComponent {
         //adds the lines if hasLines = true; else, removes the lines.
         addLines(hasLines);
         
+        
         workspace.getChildren().addAll(renderPane);
         
         //clip it to avoid overflow
@@ -119,7 +124,11 @@ public class Workspace extends AppWorkspaceComponent {
     public void initStyle() {
     }
     
+    //adds lines to the renderPane
     public void addLines(Boolean bool) {
+        //NOTE: the renderPane does not have a width or height (default 0.0) until it is rendered.
+        //I started the map default with gridlines off because it renders it once and then the toggling
+        //works fine. Hopefully this is fine (I don't see why it wouldn't be).
         
         //renderPane.addLines
         Group group = new Group();
@@ -137,7 +146,7 @@ public class Workspace extends AppWorkspaceComponent {
             line.setStartX((double)((double)j/12.0*renderPane.getWidth()));
             line.setStartY(0.0f);
             line.setEndX((double)((double)j/12.0*renderPane.getWidth()));
-            line.setEndY(renderPane.getHeight()-60);
+            line.setEndY(renderPane.getHeight());
             group.getChildren().add(line);
             
         }
@@ -153,18 +162,15 @@ public class Workspace extends AppWorkspaceComponent {
                 line.setStroke(Paint.valueOf("#FAEBD7"));
             }
             
-            line.setStartY((double)((double)j/6.0*(renderPane.getHeight()-60)));
+            line.setStartY((double)((double)j/6.0*(renderPane.getHeight())));
             line.setStartX(0.0f);
-            line.setEndY((double)((double)j/6.0*(renderPane.getHeight()-60)));
+            line.setEndY((double)((double)j/6.0*(renderPane.getHeight())));
             line.setEndX(renderPane.getWidth());
             group.getChildren().add(line);
             
         }
-        
-        if (bool)
-            renderPane.getChildren().add(group);
-        else
-            renderPane.getChildren().remove(group);
+        renderPane.getChildren().add(group);
+        group.setVisible(bool);
     }
     
     public void removeButtons() {
