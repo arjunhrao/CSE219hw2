@@ -27,12 +27,19 @@ public class MapController {
     double temp2 = 0.0;
     double temp3 = 0.0;
     double temp4 = 0.0;
+    double x2 = 0.0;
+    double y2 = 0.0;
+    int foo = 0;
+    Circle circle = new Circle(5.0, Paint.valueOf("#000000"));
+
     
     public MapController(AppTemplate initApp) {
 	app = initApp;
         //myManager=(DataManager)app.getDataComponent();
         
     }
+    
+    public Circle getCircle() {return circle;}
     
     public DataManager getDataManager() { return myManager;}
     public void setDataManager(DataManager x) { myManager = x;}
@@ -62,27 +69,21 @@ public class MapController {
             temp3 = renderPane.getWidth()/2;
             temp4 = renderPane.getHeight()/2;
         }
+        if (counter != 1) {
+            x2 = x2+(x-app.getGUI().getPrimaryScene().getWidth()/2)/counter;
+            y2 = y2+(y-app.getGUI().getPrimaryScene().getHeight()/2)/counter;
+        }
+        if (counter == 1) {
+        x2 = x;
+        y2 = y-62;
+        }
+        
         
         renderPane.setLayoutX(renderPane.getLayoutX() + (temp3) - x);
         renderPane.setLayoutY(renderPane.getLayoutY() + (temp4) - (y-62));
         //same for y
         
-        /**
-         *code testing for the x,y variables
-        System.out.println("********");
-        System.out.println(xOrigin);
-        System.out.println("-------");
-        System.out.println(xOrigin-x);
-        System.out.println("-------");
-        System.out.println(yOrigin);
-        System.out.println("-------");
-        System.out.println(yOrigin-y);
-        System.out.println("-------");
-        System.out.println(x);
-        System.out.println("-------");
-        System.out.println(y);
-        System.out.println("-------");
-         */
+       
         
         
         //System.out.println(renderPane.getScaleX());
@@ -94,10 +95,14 @@ public class MapController {
         //renderPane.setLayoutY(layoutY + (.2*paneHeight) - y);
         
         //can center this at the point we clicked at for clarity
-        Circle circle = new Circle(5.0, Paint.valueOf("#999999"));
-        circle.setCenterX(x);
-        circle.setCenterY(y-62);
+        circle = new Circle(5.0, Paint.valueOf("#999999"));
+        circle.setVisible(false);
+        circle.setCenterX(x2);
+        circle.setCenterY(y2);
         renderPane.getChildren().add(circle);
+        System.out.println(x);
+        System.out.println(y-62);
+        
         //System.out.println(x);
         //System.out.println(y-62);
         double newX = renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX();
@@ -118,6 +123,7 @@ public class MapController {
         //System.out.println(newX);
         //while (Math.abs(x - newX - temp1) >= 2) {
         //System.out.println(renderPane.getLayoutX());
+        //the following code will never be reached, but it was a way that worked for me for first time clicking.
         if (counter == 0.0) {
             System.out.println(renderPane.getLayoutX());
             renderPane.setLayoutX(renderPane.getLayoutX() - (newX - temp1)/(counter));
@@ -125,90 +131,114 @@ public class MapController {
 
             renderPane.setLayoutY(renderPane.getLayoutY() - (newY - temp2)/(counter));
         }
-        System.out.println(app.getGUI().getPrimaryScene().getWidth()/2);
-        System.out.println(app.getGUI().getPrimaryScene().getHeight()/2);
-
+        
+        double h = app.getGUI().getPrimaryScene().getHeight()/2;
+        double w = app.getGUI().getPrimaryScene().getWidth()/2;
         if (counter != 0.0) {
-            //while (Math.abs((app.getGUI().getPrimaryScene().getHeight()/2 - renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())) > 5) {
-               // if (app.getGUI().getPrimaryScene().getHeight()/2 < renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())
-               // {renderPane.setTranslateY(renderPane.getTranslateY()-1.0);}
-               // if (app.getGUI().getPrimaryScene().getHeight()/2 > renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())
-               // {renderPane.setTranslateY(renderPane.getTranslateY()+1.0);}
-               // System.out.println(renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY());
+            while (Math.abs((h - renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())) > 5) {
+                if (h < renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())
+                {renderPane.setTranslateY(renderPane.getTranslateY()-5.0);}
+                if (h > renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())
+                {renderPane.setTranslateY(renderPane.getTranslateY()+5.0);}
                 
-                
-            //}
-            System.out.println("-----");
-            while (Math.abs((app.getGUI().getPrimaryScene().getWidth()/2 - renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX())) > 5) {
-                if (app.getGUI().getPrimaryScene().getWidth() < renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX())
-                {renderPane.setTranslateX(renderPane.getTranslateX()+1.0);}
-                if (app.getGUI().getPrimaryScene().getWidth() > renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX()) {
-                    renderPane.setTranslateX(renderPane.getTranslateX()-1.0);
+            }
+            while (Math.abs((w - renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX())) > 5) {
+                if (w < renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX())
+                {renderPane.setTranslateX(renderPane.getTranslateX()-5.0);}
+                if (w > renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX()) {
+                    renderPane.setTranslateX(renderPane.getTranslateX()+5.0);
                 }
-                System.out.println(renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX());
 
             }
-            System.out.println("----");
         }
         System.out.println("*****");
         counter = counter*2.0;
-        System.out.println("asdf");
-        //}
-        //System.out.println(newX);
         
-        //while (renderPane.getLayoutX() )
-        //System.out.println(renderPane.getLayoutX());
-        //renderPane.setLayoutX(renderPane.getLayoutX() + newX - x);
+        renderPane.getChildren().remove(circle);
+        workspace.reloadWorkspace();
         
-        //System.out.println(renderPane.getLayoutX());
-        //renderPane.setLayoutY(renderPane.getLayoutY() + newY - (y-62));
-        
-        
-        /**
-         * double multiplier = 1;
-        if (counter > 0) {
-            multiplier = java.lang.Math.pow(2, (double)counter);
-        }
-        counter++;
-        
-        
-        x = x/multiplier;
-        y = y/multiplier;
-        
-        
-        System.out.println(x + "------" + y);
-        
-        scale.setPivotX(x);
-        scale.setPivotY(y);
-        
-        System.out.println(x + "------" + y);
-        
-        scale.setY(2);
-        scale.setX(2);
-        //set x,y origin
-        //xOrigin = xOrigin+(xOrigin-x);
-        //yOrigin = yOrigin+(yOrigin-y);
-        
-        
-        
-        renderPane.getTransforms().add(scale);
-        * */
-        
-        //workspace.reloadWorkspace();
     }
     
     public void processZoomOut(double x, double y, Pane renderPane, double xOrigin, double yOrigin) {
         Workspace workspace = (Workspace)app.getWorkspaceComponent();
         myManager=(DataManager)app.getDataComponent();
         
+        if (x2 == 0 && y2 == 0) {
+            x2 = app.getGUI().getPrimaryScene().getWidth()/2;
+            y2 = app.getGUI().getPrimaryScene().getHeight()/2;
+        }
+        
+        circle = new Circle(5.0, Paint.valueOf("#999999"));
+        circle.setVisible(false);
+        circle.setCenterX(x2);
+        circle.setCenterY(y2);
+        renderPane.getChildren().add(circle);
+        
         renderPane.setScaleX(renderPane.getScaleX()*0.5);
         renderPane.setScaleY(renderPane.getScaleY()*0.5);
         
-        workspace.reloadWorkspace();
+        
+        
+        double h = app.getGUI().getPrimaryScene().getHeight()/2;
+        double w = app.getGUI().getPrimaryScene().getWidth()/2;
+        if (counter != 0.0) {
+            while (Math.abs((h - renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())) > 5) {
+                if (h < renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())
+                {renderPane.setTranslateY(renderPane.getTranslateY()-5.0);}
+                if (h > renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getY())
+                {renderPane.setTranslateY(renderPane.getTranslateY()+5.0);}
+                
+            }
+            while (Math.abs((w - renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX())) > 5) {
+                if (w < renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX())
+                {renderPane.setTranslateX(renderPane.getTranslateX()-5.0);}
+                if (w > renderPane.localToScene(circle.getCenterX(), circle.getCenterY()).getX()) {
+                    renderPane.setTranslateX(renderPane.getTranslateX()+5.0);
+                }
+
+            }
+        }
+        
         
         counter = counter/2.0;
+        
+        workspace.reloadWorkspace();
+        
 
         
     }
+    
+    public void processKeyLeft(Pane renderPane) {
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
+        myManager=(DataManager)app.getDataComponent();
+        renderPane.setLayoutX(renderPane.getLayoutX() + 50/counter);
+        x2 = x2 - 50/counter;
+        //x2 = x2+((x2-50)-app.getGUI().getPrimaryScene().getWidth()/2)/counter;
+    }
+    public void processKeyDown(Pane renderPane) {
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
+        myManager=(DataManager)app.getDataComponent();
+        renderPane.setLayoutY(renderPane.getLayoutY() - 50/counter);
+        x2 += 50/counter;
+        //y2 = y2+((y2+50)-app.getGUI().getPrimaryScene().getHeight()/2)/counter;
+
+    }
+    public void processKeyUp(Pane renderPane) {
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
+        myManager=(DataManager)app.getDataComponent();
+        renderPane.setLayoutY(renderPane.getLayoutY() + 50/counter);
+        x2 -= 50/counter;
+        //y2 = y2+((y2-50)-app.getGUI().getPrimaryScene().getHeight()/2)/counter;
+
+    }
+    public void processKeyRight(Pane renderPane) {
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
+        myManager=(DataManager)app.getDataComponent();
+        renderPane.setLayoutX(renderPane.getLayoutX() - 50/counter);
+        x2 = x2 + 50/counter;
+        //x2 = x2+((x2-50)-app.getGUI().getPrimaryScene().getWidth()/2)/counter;
+
+    }
+    
     
 }

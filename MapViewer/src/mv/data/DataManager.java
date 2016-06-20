@@ -2,6 +2,7 @@ package mv.data;
 
 import java.util.ArrayList;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import saf.components.AppDataComponent;
 import mv.MapViewerApp;
@@ -21,7 +22,39 @@ public class DataManager implements AppDataComponent {
     
     @Override
     public void reset() {
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
         polygonList.clear();
+        workspace.getRenderPane().setScaleX(1.0);
+        workspace.getRenderPane().setScaleY(1.0);
+
+        //might need to add stuff in here
+        double h = app.getGUI().getPrimaryScene().getHeight()/2;
+        double w = app.getGUI().getPrimaryScene().getWidth()/2;
+        Circle circle = workspace.getMapController().getCircle();
+        if (circle.getFill().equals(Paint.valueOf("#000000"))) {
+            
+        } else {
+        circle.setCenterX(workspace.getRenderPane().getWidth()/2);
+        circle.setCenterY((workspace.getRenderPane().getHeight()-62)/2);
+        while (Math.abs((h - workspace.getRenderPane().localToScene(circle.getCenterX(), circle.getCenterY()).getY())) > 5) {
+                if (h < workspace.getRenderPane().localToScene(circle.getCenterX(), circle.getCenterY()).getY())
+                {workspace.getRenderPane().setTranslateY(workspace.getRenderPane().getTranslateY()-5.0);}
+                if (h > workspace.getRenderPane().localToScene(circle.getCenterX(), circle.getCenterY()).getY())
+                {workspace.getRenderPane().setTranslateY(workspace.getRenderPane().getTranslateY()+5.0);}
+        }
+        while (Math.abs((w - workspace.getRenderPane().localToScene(circle.getCenterX(), circle.getCenterY()).getX())) > 5) {
+            if (w < workspace.getRenderPane().localToScene(circle.getCenterX(), circle.getCenterY()).getX())
+            {workspace.getRenderPane().setTranslateX(workspace.getRenderPane().getTranslateX()-5.0);}
+            if (w > workspace.getRenderPane().localToScene(circle.getCenterX(), circle.getCenterY()).getX()) {
+                workspace.getRenderPane().setTranslateX(workspace.getRenderPane().getTranslateX()+5.0);
+            }
+        }
+        }
+        
+        workspace.getRenderPane().getChildren().clear();
+        
+        workspace.getWorkspace().getChildren().clear();
+
     }
     
     public void addPolygon(Polygon p) {

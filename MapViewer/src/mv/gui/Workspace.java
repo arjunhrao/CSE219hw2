@@ -49,10 +49,12 @@ public class Workspace extends AppWorkspaceComponent {
         processEvents();
     }
     
+    public MapController getMapController() {return mapController;}
+    
     public void processEvents() {
 
         
-        workspace.setOnMouseClicked(e -> {
+        renderPane.setOnMouseClicked(e -> {
             double x = e.getSceneX();
             double y = e.getSceneY();
             if (e.getButton() == MouseButton.PRIMARY) {
@@ -71,10 +73,24 @@ public class Workspace extends AppWorkspaceComponent {
                 else
                     hasLines = true;
                 reloadWorkspace();
-                }
+            }
+            
+            if (e.getCode() == KeyCode.LEFT) {
+                mapController.processKeyLeft(renderPane);
+                reloadWorkspace();
+            }
+            if (e.getCode() == KeyCode.DOWN) {
+                mapController.processKeyDown(renderPane);
+                reloadWorkspace();
+            }
+            if (e.getCode() == KeyCode.RIGHT) {mapController.processKeyRight(renderPane);reloadWorkspace();}
+            if (e.getCode() == KeyCode.UP) {mapController.processKeyUp(renderPane);reloadWorkspace();}
         });
-    }
         
+        
+    }
+    
+    
     @Override
     public void reloadWorkspace() {
         
@@ -101,7 +117,7 @@ public class Workspace extends AppWorkspaceComponent {
         
         //renderPane.setScaleX(4);
         //renderPane.setScaleY(4);
-        renderPane.setStyle("-fx-background-color: blue;");
+        renderPane.setStyle("-fx-background-color: lightblue;");
         
         //adds the lines if hasLines = true; else, removes the lines.
         addLines(hasLines);
@@ -119,6 +135,9 @@ public class Workspace extends AppWorkspaceComponent {
         
         
     }
+    public void newRenderPane() {
+        renderPane = new Pane();
+    }
 
     @Override
     public void initStyle() {
@@ -132,40 +151,53 @@ public class Workspace extends AppWorkspaceComponent {
         
         //renderPane.addLines
         Group group = new Group();
+        double foo;
         //add longitudes
-        for (int j = 0; j < 12; j++) {
+        for (int j = 0; j < 13; j++) {
+            foo = 0.0;
             Line line = new Line();
             //if not the prime meridian, make it dashed
             if (j != 6 && j != 0 && j != 12) {
                 line.getStrokeDashArray().addAll(2d,20d);
-                line.setStroke(Paint.valueOf("#d3d3d3"));
+                line.setStroke(Paint.valueOf("#999999"));
             } else {
                 line.setStroke(Paint.valueOf("#FAEBD7"));
             }
+            //if first or last, move it a little inwards to avoid expanding the renderPane
+            if (j == 0)
+                foo = 0.01;
+            if (j==12)
+                foo = -0.01;
 
-            line.setStartX((double)((double)j/12.0*renderPane.getWidth()));
-            line.setStartY(0.0f);
-            line.setEndX((double)((double)j/12.0*renderPane.getWidth()));
-            line.setEndY(renderPane.getHeight());
+            line.setStartX((double)((double)((double)j+foo)/12.0*renderPane.getWidth()));
+            line.setStartY(0.02f);
+            line.setEndX((double)((double)((double)j+foo)/12.0*renderPane.getWidth()));
+            line.setEndY(renderPane.getHeight()-.02);
             group.getChildren().add(line);
             
         }
+        
         //add latitudes
-        for (int j = 0; j < 6; j++) {
+        for (int j = 0; j < 7; j++) {
             Line line = new Line();
+            foo = 0.0;
             //if not the prime meridian, make it dashed
             
             if (j != 3) {
                 line.getStrokeDashArray().addAll(2d,20d);
-                line.setStroke(Paint.valueOf("#d3d3d3"));
+                line.setStroke(Paint.valueOf("#999999"));
             } else {
                 line.setStroke(Paint.valueOf("#FAEBD7"));
             }
+            if (j == 0)
+                foo = 0.01;
+            if (j == 6)
+                foo = -0.01;
             
-            line.setStartY((double)((double)j/6.0*(renderPane.getHeight())));
-            line.setStartX(0.0f);
-            line.setEndY((double)((double)j/6.0*(renderPane.getHeight())));
-            line.setEndX(renderPane.getWidth());
+            line.setStartY((double)((double)((double)j+foo)/6.0*(renderPane.getHeight())));
+            line.setStartX(0.02f);
+            line.setEndY((double)((double)((double)j+foo)/6.0*(renderPane.getHeight())));
+            line.setEndX(renderPane.getWidth()-.02);
             group.getChildren().add(line);
             
         }
